@@ -8,7 +8,7 @@ const content = [
     content: (
       <div className="h-full w-full flex items-center justify-center text-white">
         <Image
-          src="https://i.imgflip.com/8asa6.jpg"
+          src="https://images.unsplash.com/photo-1527689368864-3a821dbccc34"
           width={300}
           height={300}
           className="h-full w-full object-cover"
@@ -40,7 +40,7 @@ const content = [
     content: (
       <div className="h-full w-full flex items-center justify-center text-white">
         <Image
-          src="https://i.imgflip.com/60170r.png"
+          src="https://plus.unsplash.com/premium_photo-1658506671316-0b293df7c72b"
           width={300}
           height={300}
           className="h-full w-full object-cover"

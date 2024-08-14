@@ -1,6 +1,7 @@
-// src/pages/api/reservasi/[id].js
+import transporter from "@/utils/nodemailer";
 import firebaseApp from "../../../firebase/config";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import dayjs from "dayjs";
 
 export default async function handler(req, res) {
   const { method, query, body } = req;
@@ -42,7 +43,24 @@ export default async function handler(req, res) {
         }
 
         await updateDoc(reservasiDoc, body);
+
         const updatedReservasi = { id, ...body };
+        // console.log("Reservasi updated:", updatedReservasi);
+        // kirim email notifikasi
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: updatedReservasi?.email_pasien, // Email pasien
+          subject: "Pembaruan Reservasi",
+          text: `Pembaruan Reservasi Anda telah berhasil.\n\nEmail:${updatedReservasi?.email_pasien}\nKeluhan:${
+            updatedReservasi?.keluhan
+          }\nWaktu Reservasi:${dayjs(updatedReservasi?.waktu_reservasi).format("DD MMMM YYYY, HH:mm")} WITA\n\nStatus:${
+            updatedReservasi?.status
+          }\n\nAkses Sistem Reservasi Pasien hanya di ${
+            process.env.NEXT_PUBLIC_WEBSITE_URL
+          }\n\nTerima kasih telah menggunakan layanan kami.`,
+        };
+        await transporter.sendMail(mailOptions);
+
         res.status(200).json(updatedReservasi);
       } catch (error) {
         console.error("Error updating reservasi:", error);

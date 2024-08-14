@@ -3,6 +3,7 @@ import firebaseApp from "../../../firebase/config";
 import { getFirestore, collection, getDocs, doc, getDoc, addDoc, where, query } from "firebase/firestore";
 import transporter from "../../../utils/nodemailer";
 import XLSX from "xlsx";
+import dayjs from "dayjs";
 
 export default async function handler(req, res) {
   const { method, body, query: queryParams } = req;
@@ -31,14 +32,20 @@ export default async function handler(req, res) {
       const docRef = await addDoc(reservasiRef, body);
       const newReservasi = { id: docRef.id, ...body };
 
+      // console.log("newReservasi:", newReservasi);
+
       // Kirim email notifikasi
       const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: email_pasien, // Email pasien yang dikirim dalam body request
-        subject: "Konfirmasi Reservasi",
+        to: newReservasi?.email_pasien,
+        subject: "Berhasil Buat Reservasi",
         text: `Reservasi Anda telah berhasil. Berikut detailnya:\n\nPasien: ${pasienDoc.data().nama}\nDokter: ${
           dokterDoc.data().nama
-        }\nTanggal & Waktu: ${new Date(body.tanggal_waktu).toLocaleString()}\n\nTerima kasih telah menggunakan layanan kami.`,
+        }\nTanggal & Waktu: ${dayjs(newReservasi?.waktu_reservasi).format(
+          "DD MMMM YYYY, HH:mm"
+        )} WITA\n\nAkses Sistem Reservasi Pasien hanya di ${
+          process.env.NEXT_PUBLIC_WEBSITE_URL
+        }\n\nTerima kasih telah menggunakan layanan kami.`,
       };
 
       await transporter.sendMail(mailOptions);

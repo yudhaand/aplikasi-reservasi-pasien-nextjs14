@@ -11,7 +11,7 @@ export default function PasienReservasi({ dokter }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchReservasi({ dokter: dokter?.id || "" });
+        const data = await fetchReservasi({ dokter: dokter?.uid || "" });
         serReservations(data);
       } catch (error) {
         console.error("Error fetching reservasi:", error);
